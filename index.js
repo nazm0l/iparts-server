@@ -44,6 +44,21 @@ async function run(){
             const result = await ordersCollection.insertOne(newOrder);
             res.send(result);
           });
+
+        //update quantity
+        app.put('/parts/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const newQuantity = req.body
+            const options = {upsert: true}
+            const updateDoc ={
+                $set: {
+                        availableQuantity: newQuantity.updateQuantity
+                }
+            }
+            const result = await partsCollection.updateOne(query, updateDoc, options);
+            res.send(result);
+        })
        
     }
     finally{
