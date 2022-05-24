@@ -38,6 +38,21 @@ async function run(){
             res.send(parts);
         });
 
+        //update quantity
+        app.put('/parts/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const newQuantity = req.body
+            const options = {upsert: true}
+            const updateDoc ={
+                $set: {
+                        availableQuantity: newQuantity.updateQuantity
+                }
+            }
+            const result = await partsCollection.updateOne(query, updateDoc, options);
+            res.send(result);
+        })
+
         //add order
         app.post('/orders', async(req, res) =>{
             const newOrder = req.body;
@@ -54,20 +69,16 @@ async function run(){
             res.send(orders);
         });
 
-        //update quantity
-        app.put('/parts/:id', async(req, res) =>{
-            const id = req.params.id;
-            const query = {_id: ObjectId(id)};
-            const newQuantity = req.body
-            const options = {upsert: true}
-            const updateDoc ={
-                $set: {
-                        availableQuantity: newQuantity.updateQuantity
-                }
-            }
-            const result = await partsCollection.updateOne(query, updateDoc, options);
-            res.send(result);
-        })
+        // user based order
+        app.get('/userorders', async(req, res) =>{
+            const email = req.query.email   
+            const query = {email};
+            const cursor = ordersCollection.find(query);
+            const order = await cursor.toArray();
+
+            res.send(order);
+            
+        });
        
     }
     finally{
