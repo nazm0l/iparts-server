@@ -38,6 +38,7 @@ async function run(){
         const partsCollection = client.db('iParts').collection('parts');
         const ordersCollection = client.db('iParts').collection('orders');
         const usersCollection = client.db('iParts').collection('users');
+        const reviewsCollection = client.db('iParts').collection('reviews');
         
         //all parts
         app.get('/parts', async(req, res) =>{
@@ -47,6 +48,29 @@ async function run(){
 
             res.send(parts);
         });
+
+        //add parts
+        app.post('/parts', async(req, res) =>{
+            const newParts = req.body;
+            const result = await partsCollection.insertOne(newParts);
+            res.send(result);
+          });
+
+        //Get all reviews
+        app.get('/reviews', async(req, res) =>{
+            const query = {};
+            const cursor = reviewsCollection.find(query);
+            const reviews = await cursor.toArray();
+
+            res.send(reviews);
+        });
+
+        //add review
+        app.post('/reviews', async(req, res) =>{
+            const newParts = req.body;
+            const result = await reviewsCollection.insertOne(newParts);
+            res.send(result);
+          });
        
         //single part
         app.get('/parts/:id', async(req, res) =>{
@@ -118,6 +142,25 @@ async function run(){
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '2h'})
             res.send({result, token});
+        })
+
+        //Update user profile
+        app.put('/user/:email', async(req, res) =>{
+            const email = req.params.email;
+            const user = req.body;
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updateDoc ={
+                $set: {
+                        name: user.name,
+                        occupation: user.occupation,
+                        number: user.number,
+                        address: user.address,
+                        description: user.description,
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
         })
 
         //all user
