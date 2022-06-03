@@ -128,14 +128,22 @@ async function run(){
             }
         });
 
-         // delete user order 
-         app.delete('/userorders/:id', async(req, res) => {
-            const id = req.params.id;
-            const query = {_id: ObjectId(id)};
-            const result = await ordersCollection.deleteOne(query);
-            res.send(result);
-        })
-
+        // delete user order 
+        app.delete('/userorders/:id', async(req, res) => {
+           const id = req.params.id;
+           const query = {_id: ObjectId(id)};
+           const result = await ordersCollection.deleteOne(query);
+           res.send(result);
+       })
+        
+       // payment user order 
+        app.delete('/userorders/:id', verifyToken, async(req, res) => {
+           const id = req.params.id;
+           const query = {_id: ObjectId(id)};
+           const result = await ordersCollection.findOne(query);
+           res.send(result);
+       })
+        
         //Add user
         app.put('/users/:email', async(req, res) =>{
             const email = req.params.email;
