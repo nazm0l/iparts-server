@@ -137,7 +137,7 @@ async function run(){
        })
         
        // payment user order 
-        app.delete('/userorders/:id', verifyToken, async(req, res) => {
+        app.get('/userorders/:id', async(req, res) => {
            const id = req.params.id;
            const query = {_id: ObjectId(id)};
            const result = await ordersCollection.findOne(query);
