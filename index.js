@@ -4,13 +4,12 @@ const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 
-app.use(cors({origin: 'https://iparts-22194.web.app/'}));
+app.use(cors());
 app.use(express.json());
-// app.use(cors({origin: 'https://iparts-22194.web.app/'}))
 
 
 function verifyToken(req, res, next) {
@@ -42,18 +41,18 @@ async function run(){
         const usersCollection = client.db('iParts').collection('users');
         const reviewsCollection = client.db('iParts').collection('reviews');
 
-        //payment
-        app.post('/create-payment-intent', async(req, res)=>{
-            const service = req.body;
-            const price = service.price;
-            const amount = price*100;
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount : amount,
-                currency : 'usd',
-                payment_method_type:['card']
-            });
-            res.send({clientSecret: paymentIntent.client_secret})
-        });
+        // //payment
+        // app.post('/create-payment-intent', async(req, res)=>{
+        //     const service = req.body;
+        //     const price = service.price;
+        //     const amount = price*100;
+        //     const paymentIntent = await stripe.paymentIntents.create({
+        //         amount : amount,
+        //         currency : 'usd',
+        //         payment_method_type:['card']
+        //     });
+        //     res.send({clientSecret: paymentIntent.client_secret})
+        // });
         
         //all parts
         app.get('/parts', async(req, res) =>{
@@ -151,13 +150,13 @@ async function run(){
            res.send(result);
        })
         
-       // payment user order 
-        app.get('/userorders/:id', async(req, res) => {
-           const id = req.params.id;
-           const query = {_id: ObjectId(id)};
-           const result = await ordersCollection.findOne(query);
-           res.send(result);
-       })
+    //    // payment user order 
+    //     app.get('/userorders/:id', async(req, res) => {
+    //        const id = req.params.id;
+    //        const query = {_id: ObjectId(id)};
+    //        const result = await ordersCollection.findOne(query);
+    //        res.send(result);
+    //    })
         
         //Add user
         app.put('/users/:email', async(req, res) =>{
